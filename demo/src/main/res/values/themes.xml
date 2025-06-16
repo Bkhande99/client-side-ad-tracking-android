@@ -17,7 +17,8 @@
             @android:color/transparent
         </item>
 
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- The below code has Android API 23 limitation. Commented it so that it can be used for API level below 23-->
+        <!--<item name="android:windowLightStatusBar">true</item>-->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
 
