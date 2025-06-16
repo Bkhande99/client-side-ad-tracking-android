@@ -37,13 +37,32 @@ fun JSONObject.optIntNull(name: String): Int? {
 }
 
 fun JSONObject.optDuration(name: String): Long {
-    var v = this.optString(name)
+   /* Code block start
+   Below commented code converts the string in the format "MM:SS" to a Duration object
+   & further converts in to milliseconds.
+   e.g: Input is 11:30 (11 minutes and 30 seconds)
+   var v = this.optString(name) // v = "11:30"
     if (v.isEmpty()) return 0
-    val arr: List<String> = v.split(":")
-    var duration: Duration = Duration.ZERO
+    val arr: List<String> = v.split(":") // arr = [11, 30]
+    var duration: Duration = Duration.ZERO // Default duration is zero "PT0S"
     if (arr.size == 2) {
-        v = "PT" + arr[0] + "M" + arr[1] + "S"
-        duration = Duration.parse(v)
+        v = "PT" + arr[0] + "M" + arr[1] + "S" //v = PT11M30S
+        duration = Duration.parse(v) // duration = 690 which equals to 11 minutes * 60 + 30 seconds
     }
-    return duration.toMillis()
+    return duration.toMillis()  // duration.toMillis() = 690000 (in milliseconds)
+    Code block end
+    */
+    //Above code uses Duration class which is available in Java 8 and above.
+    // & does required API level 26 (Android 8.0) or above.
+    // In order to support lower API levels, we will use below custom implementation.
+
+    val v = this.optString(name)
+    if (v.isEmpty()) return 0
+    val parts: List<String> = v.split(":")
+    if (parts.size != 2) return 0L
+
+    val minutes = parts[0].toLongOrNull() ?: return 0L
+    val seconds = parts[1].toLongOrNull() ?: return 0L
+
+    return (minutes * 60 + seconds) * 1000
 }
