@@ -6,6 +6,7 @@ import com.harmonicinc.clientsideadtracking.tracking.util.Constants.SESSION_ID_Q
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -14,9 +15,16 @@ import java.net.HttpURLConnection
 import kotlin.coroutines.CoroutineContext
 
 class OkHttpService(
-    private val coroutineContext: CoroutineContext = Dispatchers.IO
+    private val coroutineContext: CoroutineContext = Dispatchers.IO,
+    private val interceptors: List<Interceptor> = emptyList()
 ) {
-    private val client = OkHttpClient.Builder().followRedirects(false).build()
+    private val client: OkHttpClient by lazy {
+        OkHttpClient.Builder().apply {
+            interceptors.forEach {
+                addInterceptor(it)
+            }
+        }.followRedirects(false).build()
+    }
 
     suspend fun getSessionId(url: String): String? = withContext(coroutineContext) {
         val req = Request.Builder().url(url).build()
